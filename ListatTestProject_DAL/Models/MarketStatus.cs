@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ListatTestProject_DAL.Models
+﻿namespace ListatTestProject_DAL.Models
 {
     public enum MarketStatus
     {

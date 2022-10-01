@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ListatTestProject_DAL.Models
 {
-    public class Sale
+    public class Sale : BaseEntity
     {
         public int ItemId { get; set; }
         public DateTime CreatedDt { get; set; }
