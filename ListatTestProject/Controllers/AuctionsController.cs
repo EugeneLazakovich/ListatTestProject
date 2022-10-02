@@ -1,4 +1,5 @@
-﻿using ListatTestProject_BL.Services.SaleService;
+﻿using ListatTestProject_BL.DTOs;
+using ListatTestProject_BL.Services.SaleService;
 using ListatTestProject_DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,13 +20,13 @@ namespace ListatTestProject.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Sale>> GetAll()
+        public async Task<IEnumerable<SaleDto>> GetAll()
         {
             return await _saleService.GetAllSales();
         }
 
         [HttpGet("{id}")]
-        public async Task<Sale> GetById(int id)
+        public async Task<SaleDto> GetById(int id)
         {
             return await _saleService.GetByIdSale(id);
         }
