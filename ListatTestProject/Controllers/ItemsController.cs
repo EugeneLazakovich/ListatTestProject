@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 namespace ListatTestProject.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class ItemController : Controller
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("0.1")]
+    public class ItemsController : ControllerBase
     {
         private readonly IItemService _itemService;
 
-        public ItemController(IItemService itemService)
+        public ItemsController(IItemService itemService)
         {
             _itemService = itemService;
         }

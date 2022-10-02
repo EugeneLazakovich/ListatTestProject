@@ -1,9 +1,11 @@
+using ListatTestProject_BL.Services.ItemService;
 using ListatTestProject_BL.Services.SaleService;
 using ListatTestProject_DAL;
 using ListatTestProject_DAL.Interfaces;
 using ListatTestProject_DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,12 +29,22 @@ namespace ListatTestProject
                options.UseSqlServer(Configuration["ConnectionStrings:Default"], b => b.MigrationsAssembly("ListatTestProject_DAL")));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<ISaleRepository, SaleRepository>();
             services.AddScoped<ISaleService, SaleService>();
+            services.AddScoped<IItemService, ItemService>();
 
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddControllers();
+
+            //Update middlewear to use versioning
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(0, 1);// ApiVersion.Default;
+                options.ReportApiVersions = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
