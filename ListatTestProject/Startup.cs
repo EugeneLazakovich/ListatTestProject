@@ -5,11 +5,13 @@ using ListatTestProject_DAL.Interfaces;
 using ListatTestProject_DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace ListatTestProject
 {
@@ -37,6 +39,7 @@ namespace ListatTestProject
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddControllers();
+            services.AddResponseCaching();
 
             //Update middlewear to use versioning
             services.AddApiVersioning(options =>
@@ -59,6 +62,19 @@ namespace ListatTestProject
 
             app.UseRouting();
             app.UseCors();
+            app.UseResponseCaching();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromSeconds(20)
+                    };
+
+                await next();
+            });
 
             app.UseEndpoints(endpoints =>
             {
