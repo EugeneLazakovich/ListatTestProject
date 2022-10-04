@@ -55,25 +55,17 @@ namespace ListatTestProject_BL.Services.SaleService
 
         public async Task<IEnumerable<SaleDto>> GetSalesByFilter(
             string name,
-            DateTime? createdDt,
-            DateTime? finishedDt,
-            decimal? price,
             MarketStatus? status,
             string seller,
-            string buyer,
             string sort_order,
-            string sort_key,
-            int limit)
+            string sort_key)
         {
             var sales = await _saleRepository
                 .GetAllByPredicate(s => 
-                    (string.IsNullOrEmpty(name) || name.ToLower() == s.Item.Name) &&
-                    (!createdDt.HasValue || createdDt.Value.Date == s.CreatedDt.Date) &&
-                    (!finishedDt.HasValue || finishedDt.Value.Date == s.FinishedDt.Value.Date) &&
-                    (!price.HasValue || price.Value == s.Price) &&
+                    (string.IsNullOrEmpty(name) || name.ToLower() == s.Item.Name.Replace(" ", "_").ToLower()) &&
                     (!status.HasValue || status.Value == s.Status) &&
-                    (string.IsNullOrEmpty(seller) || seller.ToLower() == s.Seller) &&
-                    (string.IsNullOrEmpty(buyer) || buyer.ToLower() == s.Buyer));
+                    (string.IsNullOrEmpty(seller) || seller.ToLower() == s.Seller.ToLower()));
+
             if(!string.IsNullOrEmpty(sort_order) && sort_order.ToLower() == "desc")
             {
                 if(!string.IsNullOrEmpty(sort_key) && sort_key.ToLower() == "createddt")
@@ -101,9 +93,7 @@ namespace ListatTestProject_BL.Services.SaleService
                 }
             }
 
-            limit = limit == 0 ? 10 : limit;
-
-            return sales.Take(limit).Select(s => MapToSaleDto(s));
+            return sales.Select(s => MapToSaleDto(s));
         }
 
         private SaleDto MapToSaleDto(Sale sale)

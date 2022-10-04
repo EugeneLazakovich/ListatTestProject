@@ -15,14 +15,9 @@ namespace ListatTestProject_BL.Services.SaleService
         Task<int> AddSale(Sale sale);
         Task<IEnumerable<SaleDto>> GetSalesByFilter(
             string name,
-            DateTime? createdDt,
-            DateTime? finishedDt,
-            decimal? price,
             MarketStatus? status,
             string seller,
-            string buyer,
             string sort_order,
-            string sort_key,
-            int limit = 10);
+            string sort_key);
     }
 }

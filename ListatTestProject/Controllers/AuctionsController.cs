@@ -1,9 +1,11 @@
-﻿using ListatTestProject_BL.DTOs;
+﻿using ListatTestProject.Models;
+using ListatTestProject_BL.DTOs;
 using ListatTestProject_BL.Services.SaleService;
 using ListatTestProject_DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ListatTestProject.Controllers
@@ -33,9 +35,18 @@ namespace ListatTestProject.Controllers
         }
 
         [HttpPost]
-        public async Task<int> Add(Sale sale)
+        public async Task<IActionResult> Add(Sale sale)
         {
-            return await _saleService.AddSale(sale);
+            try
+            {
+                var result = await _saleService.AddSale(sale);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
@@ -61,40 +72,44 @@ namespace ListatTestProject.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<SaleDto>> GetSaleDtosByFilter(
+        public async Task<IActionResult> GetSaleDtosByFilter(
             [FromQuery] string name,
-            [FromQuery] DateTime createdDt,
-            [FromQuery] DateTime finishedDt,
-            [FromQuery] decimal price,
             [FromQuery] string status,
             [FromQuery] string seller,
-            [FromQuery] string buyer,
             [FromQuery] string sort_order,
             [FromQuery] string sort_key,
-            [FromQuery] int limit)
+            [FromQuery] int limit,
+            [FromQuery] int page = 1)
         {
-            DateTime? createdDtNullable = createdDt.ToString("dd.MM.yyyy") == "01.01.0001" ? null : createdDt;
-            DateTime? finishedDtNullable = finishedDt.ToString("dd.MM.yyyy") == "01.01.0001" ? null : finishedDt;
-            decimal? priceNullable = price == 0 ? null : price;
+            limit = limit != 0 ? limit : 10;
             MarketStatus? statusNullable = string.IsNullOrEmpty(status) ? null : ParseStringToMarketStatus(status);
-            return await _saleService.GetSalesByFilter(name, createdDtNullable, finishedDtNullable, priceNullable, statusNullable, seller, buyer, sort_order, sort_key, limit);
+            var salesDto = await _saleService.GetSalesByFilter(name, statusNullable, seller, sort_order, sort_key);
+            IEnumerable<SaleDto> salesPerPages = salesDto.Skip((page - 1) * limit).Take(limit);
+            PageInfo pageInfo = new PageInfo 
+            { 
+                PageNumber = page, 
+                PageSize = limit, 
+                TotalItems = salesDto.Count() 
+            };
+            IndexViewModel ivm = new IndexViewModel 
+            { 
+                PageInfo = pageInfo, 
+                Sales = salesPerPages 
+            };
+
+            return Ok(ivm);
         }
 
-        private MarketStatus? ParseStringToMarketStatus(string status)
+        private static MarketStatus? ParseStringToMarketStatus(string status)
         {
-            switch (status.ToLower())
+            return (status.ToLower()) switch
             {
-                case "none":
-                    return MarketStatus.None;
-                case "canceled":
-                    return MarketStatus.Canceled;
-                case "finished":
-                    return MarketStatus.Finished;
-                case "active":
-                    return MarketStatus.Active;
-                default:
-                    return null;
-            }
+                "none" => MarketStatus.None,
+                "canceled" => MarketStatus.Canceled,
+                "finished" => MarketStatus.Finished,
+                "active" => MarketStatus.Active,
+                _ => null,
+            };
         }
     }
 }
