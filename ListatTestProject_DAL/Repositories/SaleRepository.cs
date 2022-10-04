@@ -31,12 +31,14 @@ namespace ListatTestProject_DAL.Repositories
             bool isNullOrEmptyName = string.IsNullOrEmpty(name);
             bool hasValueStatus = status.HasValue;
             bool isNullOrEmptySeller = string.IsNullOrEmpty(seller);
+            name = !isNullOrEmptyName ? name.ToLower() : name;
+            seller = !isNullOrEmptySeller ? seller.ToLower() : seller;
             return await _dbContext.Sales
                 .Include(s => s.Item)
                 .Where(s =>
-                    (isNullOrEmptyName || s.Item.Name.ToLower().Contains(name.ToLower())) &&
+                    (isNullOrEmptyName || s.Item.Name.ToLower().Contains(name)) &&
                     (!hasValueStatus || status.Value == s.Status) &&
-                    (isNullOrEmptySeller || s.Seller.ToLower().Contains(seller.ToLower())))
+                    (isNullOrEmptySeller || s.Seller.ToLower().Contains(seller)))
                 .Skip((page - 1) * limit)
                 .Take(limit)
                 .ToListAsync();
