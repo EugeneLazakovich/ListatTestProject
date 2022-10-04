@@ -22,11 +22,23 @@ namespace ListatTestProject_DAL.Repositories
             return await _dbContext.Sales.Include(s => s.Item).ToListAsync();
         }
 
-        public async Task<IEnumerable<Sale>> GetAllByPredicate(Expression<Func<Sale, bool>> predicate)
+        public async Task<IEnumerable<Sale>> GetAllByPredicate(string name, 
+            MarketStatus? status, 
+            string seller, 
+            int limit, 
+            int page)
         {
+            bool isNullOrEmptyName = string.IsNullOrEmpty(name);
+            bool hasValueStatus = status.HasValue;
+            bool isNullOrEmptySeller = string.IsNullOrEmpty(seller);
             return await _dbContext.Sales
                 .Include(s => s.Item)
-                .Where(predicate)
+                .Where(s =>
+                    (isNullOrEmptyName || s.Item.Name.ToLower().Contains(name.ToLower())) &&
+                    (!hasValueStatus || status.Value == s.Status) &&
+                    (isNullOrEmptySeller || s.Seller.ToLower().Contains(seller.ToLower())))
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .ToListAsync();
         }
 

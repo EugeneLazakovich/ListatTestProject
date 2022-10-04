@@ -58,13 +58,12 @@ namespace ListatTestProject_BL.Services.SaleService
             MarketStatus? status,
             string seller,
             string sort_order,
-            string sort_key)
+            string sort_key,
+            int limit,
+            int page)
         {
             var sales = await _saleRepository
-                .GetAllByPredicate(s => 
-                    (string.IsNullOrEmpty(name) || name.ToLower() == s.Item.Name.Replace(" ", "_").ToLower()) &&
-                    (!status.HasValue || status.Value == s.Status) &&
-                    (string.IsNullOrEmpty(seller) || seller.ToLower() == s.Seller.ToLower()));
+                .GetAllByPredicate(name, status, seller, limit, page);
 
             if(!string.IsNullOrEmpty(sort_order) && sort_order.ToLower() == "desc")
             {

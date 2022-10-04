@@ -18,6 +18,8 @@ namespace ListatTestProject_BL.Services.SaleService
             MarketStatus? status,
             string seller,
             string sort_order,
-            string sort_key);
+            string sort_key,
+            int limit,
+            int page);
     }
 }

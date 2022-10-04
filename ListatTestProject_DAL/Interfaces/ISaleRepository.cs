@@ -8,7 +8,7 @@ namespace ListatTestProject_DAL.Interfaces
 {
     public interface ISaleRepository
     {
-        Task<IEnumerable<Sale>> GetAllByPredicate(Expression<Func<Sale, bool>> predicate);
+        Task<IEnumerable<Sale>> GetAllByPredicate(string name, MarketStatus? status, string seller, int limit, int page);
         Task<Sale> GetById(int id);
         Task<IEnumerable<Sale>> GetAll();
     }

@@ -70,7 +70,7 @@ namespace ListatTestProject
                     new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
                     {
                         Public = true,
-                        MaxAge = TimeSpan.FromSeconds(20)
+                        MaxAge = TimeSpan.FromSeconds(5)
                     };
 
                 await next();

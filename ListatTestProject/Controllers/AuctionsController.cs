@@ -83,21 +83,19 @@ namespace ListatTestProject.Controllers
         {
             limit = limit != 0 ? limit : 10;
             MarketStatus? statusNullable = string.IsNullOrEmpty(status) ? null : ParseStringToMarketStatus(status);
-            var salesDto = await _saleService.GetSalesByFilter(name, statusNullable, seller, sort_order, sort_key);
-            IEnumerable<SaleDto> salesPerPages = salesDto.Skip((page - 1) * limit).Take(limit);
+            var salesDto = await _saleService.GetSalesByFilter(name, statusNullable, seller, sort_order, sort_key, limit, page);
             PageInfo pageInfo = new PageInfo 
             { 
                 PageNumber = page, 
                 PageSize = limit, 
                 TotalItems = salesDto.Count() 
             };
-            IndexViewModel ivm = new IndexViewModel 
-            { 
-                PageInfo = pageInfo, 
-                Sales = salesPerPages 
-            };
+            Response.Headers.Add("PageNumber", pageInfo.PageNumber.ToString());
+            Response.Headers.Add("PageSize", pageInfo.PageSize.ToString());
+            Response.Headers.Add("TotalItems", pageInfo.TotalItems.ToString());
+            Response.Headers.Add("TotalPages", pageInfo.TotalPages.ToString());
 
-            return Ok(ivm);
+            return Ok(salesDto);
         }
 
         private static MarketStatus? ParseStringToMarketStatus(string status)
