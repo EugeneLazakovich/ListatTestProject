@@ -13,6 +13,7 @@ namespace ListatTestProject.Controllers
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("0.1")]
+    [ResponseCache(Duration = 20, VaryByQueryKeys = new string[] { "name", "seller", "status"})]
     public class AuctionsController : ControllerBase
     {
         private readonly ISaleService _saleService;
