@@ -4,6 +4,7 @@ using ListatTestProject_DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ListatTestProject_BL.Services.SaleService
@@ -62,38 +63,13 @@ namespace ListatTestProject_BL.Services.SaleService
             int limit,
             int page)
         {
-            var sales = await _saleRepository
-                .GetAllByPredicate(name, status, seller, limit, page);
+            sort_key = string.IsNullOrEmpty(sort_key) ? default : string.Concat(sort_key[0].ToString().ToUpper(), sort_key.ToLower().AsSpan(1));
 
-            if(!string.IsNullOrEmpty(sort_order) && sort_order.ToLower() == "desc")
-            {
-                if(!string.IsNullOrEmpty(sort_key) && sort_key.ToLower() == "createddt")
-                {
-                    sales = sales.OrderByDescending(s => s.CreatedDt);
-                }
-                else if (!string.IsNullOrEmpty(sort_key) && sort_key.ToLower() == "price")
-                {
-                    sales = sales.OrderByDescending(s => s.Price);
-                }
-                else
-                {
-                    sales = sales.OrderByDescending(s => s.Id);
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(sort_key) && sort_key.ToLower() == "createddt")
-                {
-                    sales = sales.OrderBy(s => s.CreatedDt);
-                }
-                if (!string.IsNullOrEmpty(sort_key) && sort_key.ToLower() == "price")
-                {
-                    sales = sales.OrderBy(s => s.Price);
-                }
-            }
+            var sales = await _saleRepository
+                .GetAllByPredicate(name, status, seller, limit, page, sort_key, sort_order);
 
             return sales.Select(s => MapToSaleDto(s));
-        }
+        }  
 
         private SaleDto MapToSaleDto(Sale sale)
         {
