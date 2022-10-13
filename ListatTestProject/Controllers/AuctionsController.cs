@@ -84,21 +84,21 @@ namespace ListatTestProject.Controllers
             [FromQuery] string sort_key,
             [FromQuery] string limit,
             [FromQuery] string page)
-        {
-            //cts.CancelAfter(4000);
-            
-            if(!Int32.TryParse(limit, out int limitInt))
-            {
-                limitInt = 10;
-            }
-            
-            if(!Int32.TryParse(page, out int pageInt))
-            {
-                pageInt = 1;
-            }
+        {            
             try
             {
-                
+                await Task.Delay(4000, ct);
+
+                if (!Int32.TryParse(limit, out int limitInt))
+                {
+                    limitInt = 10;
+                }
+
+                if (!Int32.TryParse(page, out int pageInt))
+                {
+                    pageInt = 1;
+                }
+
                 MarketStatus? statusNullable = string.IsNullOrEmpty(status) ? null : ParseStringToMarketStatus(status);
                 var salesDto = await _saleService.GetSalesByFilter(name, statusNullable, seller, sort_order, sort_key, limitInt, pageInt);
                 PageInfo pageInfo = new PageInfo 
