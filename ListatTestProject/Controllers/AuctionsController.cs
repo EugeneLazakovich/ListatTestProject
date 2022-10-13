@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ListatTestProject.Controllers
@@ -17,6 +18,8 @@ namespace ListatTestProject.Controllers
     public class AuctionsController : ControllerBase
     {
         private readonly ISaleService _saleService;
+        static CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
 
         public AuctionsController(ISaleService saleService)
         {
@@ -79,24 +82,50 @@ namespace ListatTestProject.Controllers
             [FromQuery] string seller,
             [FromQuery] string sort_order,
             [FromQuery] string sort_key,
-            [FromQuery] int limit,
-            [FromQuery] int page = 1)
+            [FromQuery] string limit,
+            [FromQuery] string page)
         {
-            limit = limit != 0 ? limit : 10;
-            MarketStatus? statusNullable = string.IsNullOrEmpty(status) ? null : ParseStringToMarketStatus(status);
-            var salesDto = await _saleService.GetSalesByFilter(name, statusNullable, seller, sort_order, sort_key, limit, page);
-            PageInfo pageInfo = new PageInfo 
-            { 
-                PageNumber = page, 
-                PageSize = limit, 
-                TotalItems = salesDto.Count() 
-            };
-            Response.Headers.Add("PageNumber", pageInfo.PageNumber.ToString());
-            Response.Headers.Add("PageSize", pageInfo.PageSize.ToString());
-            Response.Headers.Add("TotalItems", pageInfo.TotalItems.ToString());
-            Response.Headers.Add("TotalPages", pageInfo.TotalPages.ToString());
+            //cts.CancelAfter(4000);
+            
+            if(!Int32.TryParse(limit, out int limitInt))
+            {
+                limitInt = 10;
+            }
+            
+            if(!Int32.TryParse(page, out int pageInt))
+            {
+                pageInt = 1;
+            }
+            try
+            {
+                
+                MarketStatus? statusNullable = string.IsNullOrEmpty(status) ? null : ParseStringToMarketStatus(status);
+                var salesDto = await _saleService.GetSalesByFilter(name, statusNullable, seller, sort_order, sort_key, limitInt, pageInt);
+                PageInfo pageInfo = new PageInfo 
+                { 
+                    PageNumber = pageInt, 
+                    PageSize = limitInt, 
+                    TotalItems = salesDto.Count()
+                };
+                Response.Headers.Add("PageNumber", pageInfo.PageNumber.ToString());
+                Response.Headers.Add("PageSize", pageInfo.PageSize.ToString());
+                Response.Headers.Add("TotalItems", pageInfo.TotalItems.ToString());
+                Response.Headers.Add("TotalPages", pageInfo.TotalPages.ToString());
 
-            return Ok(salesDto);
+                return Ok(salesDto);
+            }
+            catch (OperationCanceledException ex)
+            {
+                return NotFound(ex.Message);
+            }            
+        }
+
+        [HttpGet("cancel")]
+        public IActionResult CancelTask()
+        {
+            cts.Cancel();
+
+            return Ok();
         }
 
         private static MarketStatus? ParseStringToMarketStatus(string status)
