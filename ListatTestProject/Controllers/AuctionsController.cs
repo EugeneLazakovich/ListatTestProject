@@ -14,12 +14,12 @@ namespace ListatTestProject.Controllers
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("0.1")]
-    //[ResponseCache(Duration = 50, VaryByQueryKeys = new string[] { "name", "seller", "status", "sort_order", "sort_key", "limit", "page"})]
+    [ResponseCache(Duration = 50, VaryByQueryKeys = new string[] { "name", "seller", "status", "sort_order", "sort_key", "limit", "page"})]
     public class AuctionsController : ControllerBase
     {
         private readonly ISaleService _saleService;
-        static CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
+        private readonly static CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationToken ct = cts.Token;
 
         public AuctionsController(ISaleService saleService)
         {

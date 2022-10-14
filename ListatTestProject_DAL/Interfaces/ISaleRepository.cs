@@ -1,7 +1,5 @@
 ﻿using ListatTestProject_DAL.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ListatTestProject_DAL.Interfaces
