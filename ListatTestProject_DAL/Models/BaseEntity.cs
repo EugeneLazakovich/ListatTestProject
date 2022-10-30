@@ -6,5 +6,6 @@ namespace ListatTestProject_DAL.Models
     {
         [Key]
         public int Id { get; set; }
+        public bool IsDelete { get; set; }
     }
 }

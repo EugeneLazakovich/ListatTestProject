@@ -53,7 +53,7 @@ namespace ListatTestProject.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpGet("delete/{id}")]
         public async Task<bool> Delete(int id)
         {
             return await _itemService.DeleteByIdItem(id);

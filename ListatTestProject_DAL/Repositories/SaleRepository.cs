@@ -38,6 +38,7 @@ namespace ListatTestProject_DAL.Repositories
             return await _dbContext.Sales
                 .Include(s => s.Item)
                 .Where(s =>
+                    !s.IsDelete &&
                     (isNullOrEmptyName || s.Item.Name.ToLower().Contains(name)) &&
                     (!hasValueStatus || status.Value == s.Status) &&
                     (isNullOrEmptySeller || s.Seller.ToLower().Contains(seller)))

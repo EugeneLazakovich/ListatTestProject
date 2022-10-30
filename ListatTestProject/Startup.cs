@@ -61,7 +61,7 @@ namespace ListatTestProject
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors();
+            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseResponseCaching();
 
             app.Use(async (context, next) =>

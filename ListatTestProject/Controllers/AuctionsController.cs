@@ -5,6 +5,7 @@ using ListatTestProject_DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace ListatTestProject.Controllers
             return await _saleService.GetByIdSale(id);
         }
 
-        [HttpPost]
+        [HttpPost("add")]
         public async Task<IActionResult> Add(Sale sale)
         {
             try
@@ -69,7 +70,7 @@ namespace ListatTestProject.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpGet("delete/{id}")]
         public async Task<bool> Delete(int id)
         {
             return await _saleService.DeleteByIdSale(id);
@@ -87,7 +88,7 @@ namespace ListatTestProject.Controllers
         {            
             try
             {
-                await Task.Delay(4000, ct);
+                //await Task.Delay(4000, ct);
 
                 if (!Int32.TryParse(limit, out int limitInt))
                 {

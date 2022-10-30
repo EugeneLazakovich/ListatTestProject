@@ -31,20 +31,25 @@ namespace ListatTestProject_DAL.Repositories
 
         public async Task<bool> DeleteById(int id)
         {
-            var item = new T { Id = id };
-            _dbContext.Entry(item).State = EntityState.Deleted;
+            var item = await GetById(id);
+
+            if(item != null)
+            {
+                item.IsDelete = true;
+                _dbContext.Entry(item).State = EntityState.Modified;
+            }            
 
             return await _dbContext.SaveChangesAsync() != 0;
         }
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.Where(t => !t.IsDelete).ToListAsync();
         }
 
         public async Task<T> GetById(int id)
         {
-            return await _dbSet.Where(c => c.Id == id).FirstOrDefaultAsync();
+            return await _dbSet.Where(c => c.Id == id && !c.IsDelete).FirstOrDefaultAsync();
         }
 
         public async Task<bool> Update(T item)

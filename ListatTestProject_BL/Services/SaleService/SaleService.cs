@@ -62,7 +62,7 @@ namespace ListatTestProject_BL.Services.SaleService
             int limit,
             int page)
         {
-            sort_key = string.IsNullOrEmpty(sort_key) ? default : string.Concat(sort_key[0].ToString().ToUpper(), sort_key.ToLower().AsSpan(1));
+            //sort_key = string.IsNullOrEmpty(sort_key) ? default : string.Concat(sort_key[0].ToString().ToUpper(), sort_key.ToLower().AsSpan(1));
 
             var sales = await _saleRepository
                 .GetAllByPredicate(name, status, seller, limit, page, sort_key, sort_order);
@@ -74,6 +74,7 @@ namespace ListatTestProject_BL.Services.SaleService
         {
             return new SaleDto
             {
+                Id = sale.Id,
                 Name = sale.Item.Name,
                 CreatedDt = sale.CreatedDt,
                 FinishedDt = sale.FinishedDt,

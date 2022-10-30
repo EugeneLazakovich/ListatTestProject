@@ -4,6 +4,7 @@ namespace ListatTestProject_BL.DTOs
 {
     public class SaleDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public DateTime CreatedDt { get; set; }
         public DateTime? FinishedDt { get; set; }
